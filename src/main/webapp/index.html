@@ -2,158 +2,125 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>DevOps Task Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warriors DevOps Dashboard</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#eef2f7;transition:.3s}
-.dark{background:#1e1e1e;color:#fff}
-.container{max-width:700px;margin:30px auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px #999}
-.dark .container{background:#333}
-h1{text-align:center;color:#0077cc}
-input,select,button{
-padding:10px;margin:5px;width:100%;border:1px solid #ccc;border-radius:5px
-}
-button{
-background:#0077cc;color:#fff;font-weight:bold;cursor:pointer
-}
-button:hover{background:#005fa3}
-ul{list-style:none;margin-top:20px}
-li{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-margin:5px 0;
-background:#f2f2f2;
-border-radius:5px;
-}
-.dark li{background:#555}
-.delete{
-background:red;
-padding:5px 10px;
-border:none;
-color:white;
-border-radius:5px;
-cursor:pointer;
-}
-.top{
-display:flex;
-gap:10px;
-}
-.top button{
-width:150px;
-}
-small{
-color:gray;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#111;color:#fff}
+header{background:#1f2937;padding:15px;text-align:center}
+header h1{color:#38bdf8}
+.container{padding:20px}
+#search{width:100%;padding:10px;border:none;border-radius:5px;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px}
+.card{background:#1e293b;padding:20px;border-radius:10px;text-align:center;transition:.3s}
+.card:hover{transform:scale(1.05);background:#2563eb}
+.card img{width:60px;height:60px}
+.progress{background:#444;height:10px;border-radius:5px;margin-top:10px}
+.bar{height:10px;background:#22c55e;border-radius:5px}
+.status{margin-top:25px;background:#1e293b;padding:20px;border-radius:10px}
+button{margin-top:15px;padding:10px 20px;background:#38bdf8;border:none;color:#fff;border-radius:5px;cursor:pointer}
+button:hover{background:#0ea5e9}
+footer{text-align:center;padding:15px;margin-top:20px;background:#1f2937}
 </style>
 </head>
 <body>
 
+<header>
+<h1>⚔ Warriors DevOps Dashboard</h1>
+<p id="clock"></p>
+</header>
+
 <div class="container">
 
-<h1>🚀 DevOps Task Manager</h1>
+<input type="text" id="search" placeholder="Search DevOps Tool..." onkeyup="filterCards()">
 
-<div class="top">
-<input id="search" placeholder="Search Task">
-<button onclick="toggleMode()">🌙 Mode</button>
+<div class="cards" id="cards">
+
+<div class="card">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg">
+<h3>Git</h3>
+<p>Version Control</p>
 </div>
 
-<input id="task" placeholder="Task Name">
+<div class="card">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
+<h3>GitHub</h3>
+<p>Code Repository</p>
+</div>
 
-<select id="status">
-<option>Pending</option>
-<option>In Progress</option>
-<option>Completed</option>
-</select>
+<div class="card">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg">
+<h3>Docker</h3>
+<p>Containerization</p>
+</div>
 
-<button onclick="addTask()">Add Task</button>
+<div class="card">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg">
+<h3>Kubernetes</h3>
+<p>Orchestration</p>
+</div>
 
-<ul id="list"></ul>
+<div class="card">
+<img src="https://www.jenkins.io/images/logos/jenkins/jenkins.svg">
+<h3>Jenkins</h3>
+<p>CI/CD Pipeline</p>
+</div>
+
+<div class="card">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg">
+<h3>Linux</h3>
+<p>Server Management</p>
+</div>
 
 </div>
+
+<div class="status">
+<h2>Deployment Progress</h2>
+<div class="progress">
+<div class="bar" id="bar" style="width:0%"></div>
+</div>
+<p id="percent">0%</p>
+<button onclick="deploy()">Deploy Application</button>
+</div>
+
+</div>
+
+<footer>
+<p>© 2026 Warriors DevOps Project | Java • DevOps • Cloud</p>
+</footer>
 
 <script>
-
-let tasks=JSON.parse(localStorage.getItem("tasks"))||[];
-
-function save(){
-localStorage.setItem("tasks",JSON.stringify(tasks));
+function clock(){
+let d=new Date();
+document.getElementById("clock").innerHTML=d.toLocaleTimeString();
 }
+setInterval(clock,1000);
+clock();
 
-function render(){
-
-let keyword=document.getElementById("search").value.toLowerCase();
-
-let html="";
-
-tasks.filter(t=>t.name.toLowerCase().includes(keyword))
-.forEach((t,i)=>{
-
-html+=`
-<li>
-<div>
-<b>${t.name}</b><br>
-<small>Status : ${t.status}</small>
-</div>
-
-<button class="delete" onclick="removeTask(${i})">
-Delete
-</button>
-
-</li>
-`;
-
+function filterCards(){
+let input=document.getElementById("search").value.toLowerCase();
+let cards=document.querySelectorAll(".card");
+cards.forEach(card=>{
+let text=card.innerText.toLowerCase();
+card.style.display=text.includes(input)?"block":"none";
 });
-
-document.getElementById("list").innerHTML=html;
-
 }
 
-function addTask(){
-
-let name=document.getElementById("task").value.trim();
-let status=document.getElementById("status").value;
-
-if(name==""){
-alert("Enter Task");
-return;
+function deploy(){
+let width=0;
+let bar=document.getElementById("bar");
+let txt=document.getElementById("percent");
+let interval=setInterval(()=>{
+if(width>=100){
+clearInterval(interval);
+txt.innerHTML="Deployment Successful ✅";
+}else{
+width++;
+bar.style.width=width+"%";
+txt.innerHTML=width+"%";
 }
-
-tasks.push({
-name:name,
-status:status
-});
-
-save();
-
-document.getElementById("task").value="";
-
-render();
-
+},40);
 }
-
-function removeTask(i){
-
-tasks.splice(i,1);
-
-save();
-
-render();
-
-}
-
-document.getElementById("search").addEventListener("keyup",render);
-
-function toggleMode(){
-
-document.body.classList.toggle("dark");
-
-}
-
-render();
-
 </script>
 
 </body>
